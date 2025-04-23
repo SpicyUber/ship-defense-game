@@ -134,6 +134,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BallObject: {fileID: 0}
   CannonChargeIntensity: 0
+  CannonModel: {fileID: 15277765446822476}
+  IsPlayerCannon: 0
 --- !u!1 &3504404008463689039
 GameObject:
   m_ObjectHideFlags: 0
