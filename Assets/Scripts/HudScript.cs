@@ -10,7 +10,6 @@ public class HudScript : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Cooldown.value = player.CooldownPercentage();
 
 
 
@@ -19,6 +18,7 @@ public class HudScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Cooldown.value = player.CooldownPercentage();
         
     }
 }
