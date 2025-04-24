@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class RockUpAndDown : MonoBehaviour
@@ -10,14 +12,21 @@ public class RockUpAndDown : MonoBehaviour
     bool _front_rotation_finished = false;
     bool _back_rotation_finished = true;
     bool pause = false;
-    private float rotationSpeed = 2f;
+    public float rotationSpeed = 4f;
+    public float moveYSpeed = 10f;
+    public float moveYDistance = 2f;
+    float startY;
 
     float timer = 0f;
-    public float interval = 0.5f;
+    public float interval = 0.001f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        startY = transform.position.y;
         startRotation = transform.rotation;
+        StartCoroutine(MoveY(moveYDistance));
+
+           
 
     }
 
@@ -26,7 +35,7 @@ public class RockUpAndDown : MonoBehaviour
     {
         if(pause)
         {
-            timer += Time.deltaTime;
+            timer += (Time.deltaTime * 10);
 
             if(timer >= interval)
             {
@@ -62,7 +71,23 @@ public class RockUpAndDown : MonoBehaviour
 
         }
 
-      
+   
+    }
+
+    public IEnumerator MoveY(float targetY)
+    {
+        float OGTargetY = targetY;
+        targetY = targetY + startY;
+        int sign = MathF.Sign(targetY - transform.position.y);
+        Debug.Log("znake je" + sign);
+        while (sign * (targetY - transform.position.y) > sign * 0.01f)
+        {
+            transform.Translate(new Vector3(0, sign * Time.deltaTime * moveYSpeed, 0),  Space.World);
+            yield return null;
+        }
+
+        yield return null;
+        StartCoroutine(MoveY(-OGTargetY));
 
     }
 }
