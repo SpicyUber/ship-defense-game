@@ -24,7 +24,7 @@ public class RockUpAndDown : MonoBehaviour
     {
         startY = transform.position.y;
         startRotation = transform.rotation;
-        StartCoroutine(MoveY(moveYDistance));
+        
 
            
 
@@ -88,5 +88,15 @@ public class RockUpAndDown : MonoBehaviour
         yield return null;
         StartCoroutine(MoveY(-OGTargetY));
 
+    }
+
+    public void OnDisable()
+    {
+        StopAllCoroutines();
+    }
+
+    public void OnEnable()
+    {
+        StartCoroutine(MoveY(moveYDistance));
     }
 }
