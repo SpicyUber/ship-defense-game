@@ -16,6 +16,7 @@ public class PlayerScript : MonoBehaviour
     public bool IsPressed;
     private Vector3 touchStart;
     private Vector3 touchEnd;
+    public float PredefinedLengthFromCamera = 400;
     public float cooldownTime = 3;
     public float cooldownTimer = 0;
     public Boolean IsCooldown = false;
@@ -33,23 +34,10 @@ public class PlayerScript : MonoBehaviour
     void Update()
     {
         Vector3 TouchScreenPosition = Touchscreen.current.primaryTouch.position.value;
-        TouchScreenPosition.z = 400;
+        TouchScreenPosition.z = PredefinedLengthFromCamera;
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(TouchScreenPosition);
-
-        //Cooldown mehanika
-        if (IsCooldown)
-        {
-            cooldownTimer -= Time.deltaTime;
-            if (cooldownTimer <= 0f)
-            {
-                IsCooldown = false;
-                cooldownTimer = 0f;
-                if (cooldownCompleteAudio != null)
-                {
-                    cooldownCompleteAudio.Play();
-                }
-            }
-        }
+     
+        HandleCooldown();        
         
         //prvi dodir
         if (Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
@@ -74,7 +62,18 @@ public class PlayerScript : MonoBehaviour
         if (Touchscreen.current.primaryTouch.press.isPressed && IsPressed && !IsCooldown)
         {
             Visual.SecondPoint = worldPos;
+
+            // rotacija broda
+            Vector3 direction = (touchStart - worldPos).normalized;
+            direction.y = 0f; // da ne rotira gore/dole
+
+            if (direction != Vector3.zero)
+            {
+                Quaternion lookRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
+            }
         }
+
         //prst podignut sa ekrana
         else
         if (Touchscreen.current.primaryTouch.press.wasReleasedThisFrame)
@@ -85,14 +84,15 @@ public class PlayerScript : MonoBehaviour
 
                 IsPressed = false;
                 touchEnd = Camera.main.ScreenToWorldPoint(TouchScreenPosition);
+                CannonObject.CannonChargeIntensity = (touchStart - touchEnd).magnitude;
                 Visual.IsEnabled = false;
                 Vector3 direction = (touchStart - touchEnd).normalized;
-                Vector3 force = touchStart - touchEnd;
+                Vector3 force = touchStart - touchEnd;                
                 CannonObject.Shoot(direction, force);
                 
                 if (gameManager != null)
                 {
-                    gameManager.ShakeCamera(direction, false);
+                    gameManager.ShakeCamera(-direction, false);
                     //Debug.LogError("GameManagerScript is not found in the scene!");
                 }
 
@@ -106,6 +106,22 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    private void HandleCooldown()
+    {
+        if (IsCooldown)
+        {
+            cooldownTimer -= Time.deltaTime;
+            if (cooldownTimer <= 0f)
+            {
+                IsCooldown = false;
+                cooldownTimer = 0f;
+                if (cooldownCompleteAudio != null)
+                {
+                    cooldownCompleteAudio.Play();
+                }
+            }
+        }
+    }
     public void MakeExplosion(Vector3 ImpactWorldPosition)
     {
         ParticleSystem ps = GetComponentInChildren<ParticleSystem>();
