@@ -79,7 +79,6 @@ public class RockUpAndDown : MonoBehaviour
         float OGTargetY = targetY;
         targetY = targetY + startY;
         int sign = MathF.Sign(targetY - transform.position.y);
-        Debug.Log("znake je" + sign);
         while (sign * (targetY - transform.position.y) > sign * 0.01f)
         {
             transform.Translate(new Vector3(0, sign * Time.deltaTime * moveYSpeed, 0),  Space.World);
