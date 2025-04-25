@@ -68,7 +68,7 @@ public class Cannon : MonoBehaviour
     
     public void Shoot(Vector3 direction, Vector3 force) {
         if (!IsPlayerCannon) { return; }
-        ActualShoot("Player");
+        ActualShoot("Enemy");
         CannonChargeIntensity = 0;
     }
 
@@ -77,6 +77,7 @@ public class Cannon : MonoBehaviour
         ShootExplosion();
         BallObject.Tag = Tag;
         BallObject.BallRigidbody.linearVelocity = Vector3.zero;
+        BallObject.ResetLine();
         BallObject.IsCurrentlyFlying = true;
         BallObject.transform.position = ShootTransform.position ;
         BallObject.BallRigidbody.AddForce(ShootForce,ForceMode.VelocityChange);
@@ -86,10 +87,10 @@ public class Cannon : MonoBehaviour
     private void OnDisable()
     {
         CannonChargeIntensity=0;
-        if (BallObject == null) return;
-        BallObject.BallRigidbody.linearVelocity = Vector3.zero;
-        BallObject.IsCurrentlyFlying = false;
+      
     }
+
+   
 
     private void ShootAnimation()
     {
@@ -99,7 +100,7 @@ public class Cannon : MonoBehaviour
         CannonChargeIntensity = _intensityLimiter * _intensityDampener*(_shootAnimationCooldownTimer / _shootAnimationCooldown);
 
         _shootAnimationCooldownTimer += Time.deltaTime;
-        if(_shootAnimationCooldownTimer >= _shootAnimationCooldown) { CannonChargeIntensity = 0; _shootAnimationIsOn = false; _shootAnimationCooldownTimer = _shootAnimationCooldown; ActualShoot("Enemy");  }
+        if(_shootAnimationCooldownTimer >= _shootAnimationCooldown) { CannonChargeIntensity = 0; _shootAnimationIsOn = false; _shootAnimationCooldownTimer = _shootAnimationCooldown; ActualShoot("Player");  }
 
     }
 
