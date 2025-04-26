@@ -9,6 +9,7 @@ using System.Collections;
 public class GameManagerScript : MonoBehaviour
 {
     public CinemachineCamera Camera;
+    public CinemachineImpulseSource ImpulseSource;
     public CinemachineBasicMultiChannelPerlin noise;
     private float shakeTimer; // Timer for the shake effect
     public int MaxScore = 100; // Just for testing, this should be set to the max score in the game  
@@ -19,10 +20,13 @@ public class GameManagerScript : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created  
     void Start()
     {
+        ImpulseSource = Camera.GetComponent<CinemachineImpulseSource>();
         noise = Camera.GetComponent<CinemachineBasicMultiChannelPerlin>();
         Score = 100;
-        TestShake(Vector3.zero,true);
+        TestShake(Vector3.zero,false);
+       
     }
+ 
 
     // Update is called once per frame  
     void Update()
@@ -44,21 +48,15 @@ public class GameManagerScript : MonoBehaviour
     }
     private void TestShake(Vector3 dir, bool isExplosion)
     {
-     StartCoroutine(ShakeCamera(Vector3.zero, true)); // Test shake effect
+     StartCoroutine(ShakeCamera(Vector3.zero, false)); // Test shake effect
     }
     public IEnumerator ShakeCamera(Vector3 dir, bool isExplosion)
-    {  // isExplosion true means Explosion, otherwise Recoil  
-
-
-
-        //float amplitude = isExplosion ? 3f : 1f;
-        //float frequency = isExplosion ? 2f : 1f;
-        //float duration = isExplosion ? 3f : 0.2f;
+    {  
         if (isExplosion)
         {
-            float duration = 0.5f;
-            noise.AmplitudeGain = 80f;
-            noise.FrequencyGain = 0.6f;
+            float duration = 0.7f;
+            noise.AmplitudeGain = 30f;
+            noise.FrequencyGain =30f;
             yield return new WaitForSeconds(duration);
 
             noise.AmplitudeGain = 0;
@@ -66,6 +64,11 @@ public class GameManagerScript : MonoBehaviour
         }
         else
         {
+           
+            ImpulseSource.ImpulseDefinition.ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Recoil; // Set the impulse shape to Bump                                                                                                   //ImpulseSource.ImpulseDefinition.AmplitudeGain = 10f; // Set the amplitude gain for the impulse signal
+            ImpulseSource.ImpulseDefinition.ImpulseDuration = 1.5f;
+            ImpulseSource.DefaultVelocity = Vector3.up * 15f; // Set the default velocity for the impulse signal
+            ImpulseSource.GenerateImpulse(); // Generate impulse signal
             dir *= -1f;
         }
         }
