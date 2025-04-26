@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Cannon : MonoBehaviour
@@ -16,14 +17,15 @@ public class Cannon : MonoBehaviour
     public bool IsPlayerCannon;
     private Vector3 _startingModelScale;
     private Color _startingColor;
-    private float _shootAnimationCooldown = 2f;
-    private float _shootAnimationCooldownTimer = 2f;
+    private float _shootAnimationCooldown = 1f;
+    private float _shootAnimationCooldownTimer = 1f;
     private bool _shootAnimationIsOn = false;
 
     //Intensity variables
     private float _intensityDampener=100f;
     private const float _intensityLimiter=0.5f;
-
+    //Sound effects
+    public AudioClip ShootAfterAnimationSFX, ShootSFX;
     //Enemy shooting variables
     public Vector3 ShootDirection;
     public Vector3 ShootForce;
@@ -43,8 +45,16 @@ public class Cannon : MonoBehaviour
         _startingModelScale = CannonModel.transform.localScale;
         _cannonMaterial = CannonModel.GetComponent<MeshRenderer>().material;
         _startingColor = _cannonMaterial.GetColor("_Color");
+
+        //TESTING 
+       // StartCoroutine(ShootTestAfter(3f));
     }
 
+    IEnumerator ShootTestAfter(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        Shoot(Vector3.forward,Vector3.forward*10);
+    }
    
 
     // Update is called once per frame
@@ -59,7 +69,9 @@ public class Cannon : MonoBehaviour
     
         if(IsPlayerCannon || _shootAnimationCooldownTimer< _shootAnimationCooldown)  return; 
 
-      _shootAnimationIsOn=true;
+        _shootAnimationIsOn=true;
+        if (ShootAfterAnimationSFX != null)
+        GetComponent<AudioSource>().PlayOneShot(ShootAfterAnimationSFX);
         _shootAnimationCooldownTimer=0;
         ShootDirection=direction;
         ShootForce=force;
@@ -69,6 +81,8 @@ public class Cannon : MonoBehaviour
     public void Shoot(Vector3 direction, Vector3 force) {
         if (!IsPlayerCannon) { return; }
         ActualShoot("Enemy");
+        if(ShootSFX!=null)
+        GetComponent<AudioSource>().PlayOneShot(ShootSFX);
         CannonChargeIntensity = 0;
     }
 
