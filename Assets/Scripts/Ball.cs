@@ -31,6 +31,7 @@ public class Ball : MonoBehaviour
     {
         if(Tag != null && Tag.Length!=0 && other.CompareTag(Tag)) {
         IsCurrentlyFlying=false;
+        _ballCollider.enabled = IsCurrentlyFlying;
         GetComponent<AudioSource>().PlayOneShot(GetComponent<AudioSource>().clip);
         if(Tag.Equals("Player")) {
 

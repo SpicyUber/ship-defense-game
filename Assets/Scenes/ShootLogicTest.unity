@@ -580,6 +580,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ball
       objectReference: {fileID: 0}
+    - target: {fileID: 5513824290811841227, guid: 053b2aca7e92fd14597173600343318c, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8366646684814271602, guid: 053b2aca7e92fd14597173600343318c, type: 3}
       propertyPath: m_Time
       value: 0.5
