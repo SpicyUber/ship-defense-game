@@ -9,7 +9,7 @@ public class Enemy : MonoBehaviour
     public Transform explosion;
     public ParticleSystem explosion_particle;
     public RockUpAndDown RockUpAndDown;
-
+    public GameObject EnemyChildren;
 
     //moje varijable & stuff
     public Transform player;
@@ -27,6 +27,9 @@ public class Enemy : MonoBehaviour
     int firingChances;
     bool _should_enemy_sink = false;
     bool _enemy_sank = false;
+    float spawnTimer;
+    float spawnInterval;
+
 
 
 
@@ -34,6 +37,7 @@ public class Enemy : MonoBehaviour
     {
         transform.LookAt(player);
         interval = Random.Range(5, 10);
+        spawnTimer = 0;
     }
 
     void FixedUpdate()
@@ -50,8 +54,22 @@ public class Enemy : MonoBehaviour
             {
                 rb.constraints = RigidbodyConstraints.FreezePosition; //ne zaboravi da unfreezuješ
                 _should_enemy_sink = false;
+                spawnInterval = Random.Range(1, 6);
                 _enemy_sank = true;
             }
+        }
+
+        if(_enemy_sank && spawnTimer < spawnInterval)
+        {
+            spawnTimer += Time.fixedDeltaTime;
+        }
+
+        if(_enemy_sank && spawnTimer >= spawnInterval)
+        {
+            _enemy_sank = false;
+            spawnTimer = 0;
+            spawnInterval = Random.Range(1, 6);
+            MoveToRandomLocationOutsidePlayerView();
         }
 
         if(_timer_currently_active && timer < interval)
@@ -76,20 +94,6 @@ public class Enemy : MonoBehaviour
             {
                 timer = 0f;
                 interval = Random.Range(5, 10);
-            }
-        }
-
-
-
-        //bedan pokusaj raycastinga
-
-        if (Physics.Raycast(transform.position, movingDirectionNormalized, out RaycastHit hit))
-        {
-            //stavi ga kod spawnera
-            if (hit.collider.tag != "Player" && hit.collider.tag != "cannonball")
-            {
-                _is_on_distance = true;
-                rb.linearVelocity = Vector3.zero;
             }
         }
 
@@ -132,9 +136,50 @@ public class Enemy : MonoBehaviour
 
 
     }
-    public void SpawnSelf() { }
+    public void SpawnSelf() {
 
-    public void MoveToRandomLocationOutsidePlayerView() { }
+        if ((transform.position.x >= -100 && transform.position.y <= 100) || (transform.position.z >= -100 && transform.position.z <= 100))
+        {
+            Debug.Log("nova pozicija je preblizu playeru");
+            MoveToRandomLocationOutsidePlayerView();
+        }
+
+        else if (Physics.Raycast(transform.position, movingDirectionNormalized, out RaycastHit hit))
+        {
+            if (hit.collider.tag != "Player" && hit.collider.tag != "cannonball") //staviti tag koji je jednak "Enemy"
+            {
+                Debug.Log("raycast je detektovao objekat na putu do playera");
+                MoveToRandomLocationOutsidePlayerView();
+            }
+        }
+
+        else
+        {
+            Debug.Log("trebalo bi da brod krene");
+            EnemyChildren.SetActive(true);
+            _is_on_distance = false;
+            boxCollider.enabled = true;
+            _enemy_sank = false;
+            RockUpAndDown.enabled = true;
+            rb.constraints = RigidbodyConstraints.None;
+            transform.LookAt(player);
+        }
+
+    }
+
+    public void MoveToRandomLocationOutsidePlayerView()
+    {
+        EnemyChildren.SetActive(false);
+        transform.position = new Vector3(Random.Range(-400, 400), 8, Random.Range(-400, 400));
+        SpawnSelf();
+
+
+    }
+
+
+
+
+    
 
 }
 
