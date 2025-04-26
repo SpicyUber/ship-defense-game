@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -29,15 +30,20 @@ public class Enemy : MonoBehaviour
     bool _enemy_sank = false;
     float spawnTimer;
     float spawnInterval;
+    bool _is_first_spawn = true;
 
 
 
 
     private void Start()
     {
-        transform.LookAt(player);
         interval = Random.Range(5, 10);
         spawnTimer = 0;
+        rb.linearVelocity = Vector3.zero;
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        boxCollider.enabled = false;
+        RockUpAndDown.enabled = false;
+        _should_enemy_sink = true;
     }
 
     void FixedUpdate()
@@ -55,16 +61,17 @@ public class Enemy : MonoBehaviour
                 rb.constraints = RigidbodyConstraints.FreezePosition; //ne zaboravi da unfreezuješ
                 _should_enemy_sink = false;
                 spawnInterval = Random.Range(1, 6);
+                Debug.Log("respawnovan je" + name);
                 _enemy_sank = true;
             }
         }
 
-        if(_enemy_sank && spawnTimer < spawnInterval)
+        if(_enemy_sank && spawnTimer < spawnInterval && !_is_first_spawn)
         {
             spawnTimer += Time.fixedDeltaTime;
         }
 
-        if(_enemy_sank && spawnTimer >= spawnInterval)
+        if(_enemy_sank && spawnTimer >= spawnInterval && !_is_first_spawn)
         {
             _enemy_sank = false;
             spawnTimer = 0;
@@ -107,19 +114,9 @@ public class Enemy : MonoBehaviour
         {
             rb.linearVelocity = Vector3.zero;
             _is_on_distance = true;
+            rb.constraints = RigidbodyConstraints.None;
             //pokrece se tajmer za cannon
             _timer_currently_active = true;
-        }
-    }
-
-    public void OnCollisionEnter(Collision collision)
-    {
-        if(collision.collider.tag == "cannonball")
-        {
-            Sink(transform.position); //temporary 
-            
-            
-            
         }
     }
 
@@ -138,30 +135,50 @@ public class Enemy : MonoBehaviour
     }
     public void SpawnSelf() {
 
-        if ((transform.position.x >= -100 && transform.position.y <= 100) || (transform.position.z >= -100 && transform.position.z <= 100))
+        movingDirection = (player.position - transform.position);
+        movingDirectionNormalized = movingDirection.normalized;
+
+        RaycastHit[] hit = Physics.SphereCastAll(transform.position, 10, movingDirectionNormalized, Vector3.Distance(player.position, transform.position));
+
+
+
+
+        if ((transform.position.x >= -100 && transform.position.x <= 100) || (transform.position.z >= -100 && transform.position.z <= 100))
         {
-            Debug.Log("nova pozicija je preblizu playeru");
             MoveToRandomLocationOutsidePlayerView();
         }
 
-        else if (Physics.Raycast(transform.position, movingDirectionNormalized, out RaycastHit hit))
+        else if (hit != null && hit.Length > 0)
         {
-            if (hit.collider.tag != "Player" && hit.collider.tag != "cannonball") //staviti tag koji je jednak "Enemy"
-            {
-                Debug.Log("raycast je detektovao objekat na putu do playera");
-                MoveToRandomLocationOutsidePlayerView();
+            foreach (RaycastHit h in hit) {
+                Debug.Log("udarili smo u" + h.collider.name);
+                if (h.collider.tag == "Enemy" && h.collider.gameObject != this.gameObject)
+                {
+                    MoveToRandomLocationOutsidePlayerView();
+                    break;
+                }
             }
-        }
-
-        else
-        {
-            Debug.Log("trebalo bi da brod krene");
             EnemyChildren.SetActive(true);
             _is_on_distance = false;
             boxCollider.enabled = true;
             _enemy_sank = false;
+            _should_enemy_sink = false;
             RockUpAndDown.enabled = true;
-            rb.constraints = RigidbodyConstraints.None;
+            rb.constraints = RigidbodyConstraints.FreezeRotationX;
+            rb.constraints = RigidbodyConstraints.FreezeRotationZ;
+            transform.LookAt(player);
+        }
+
+        else
+        {
+            EnemyChildren.SetActive(true);
+            _is_on_distance = false;
+            boxCollider.enabled = true;
+            _enemy_sank = false;
+            _should_enemy_sink = false;
+            RockUpAndDown.enabled = true;
+            rb.constraints = RigidbodyConstraints.FreezeRotationX;
+            rb.constraints = RigidbodyConstraints.FreezeRotationZ;
             transform.LookAt(player);
         }
 
@@ -170,10 +187,23 @@ public class Enemy : MonoBehaviour
     public void MoveToRandomLocationOutsidePlayerView()
     {
         EnemyChildren.SetActive(false);
-        transform.position = new Vector3(Random.Range(-400, 400), 8, Random.Range(-400, 400));
+        int sign1 = Random.Range(1, 3);
+        int sign2 = Random.Range(1, 3);
+        sign1 = (sign1 == 1) ? 1 : -1;
+        sign2 = (sign2 == 1) ? 1 : -1;
+        transform.position = new Vector3(Random.Range(200, 400) * sign1, 8, Random.Range(200, 400) * sign2);
+        StartCoroutine(SpawnSelfCo());
+        _is_first_spawn = false;
+
+
+    }
+
+    public IEnumerator SpawnSelfCo()
+    {
+        transform.LookAt(player);
+        rb.linearVelocity = Vector3.zero;
+        yield return new WaitForSeconds(1);
         SpawnSelf();
-
-
     }
 
 
