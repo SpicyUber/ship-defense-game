@@ -307,7 +307,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Camera: {fileID: 204769990}
-  ImpulseListener: {fileID: 0}
   ImpulseSource: {fileID: 0}
   noise: {fileID: 204769989}
   MaxScore: 100
@@ -601,7 +600,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Camera: {fileID: 204769990}
-  ImpulseListener: {fileID: 0}
   ImpulseSource: {fileID: 0}
   noise: {fileID: 204769989}
   MaxScore: 100
@@ -1175,7 +1173,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Camera: {fileID: 204769990}
-  ImpulseListener: {fileID: 0}
   ImpulseSource: {fileID: 0}
   noise: {fileID: 204769989}
   MaxScore: 100

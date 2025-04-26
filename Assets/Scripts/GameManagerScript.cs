@@ -23,7 +23,7 @@ public class GameManagerScript : MonoBehaviour
         ImpulseSource = Camera.GetComponent<CinemachineImpulseSource>();
         noise = Camera.GetComponent<CinemachineBasicMultiChannelPerlin>();
         Score = 100;
-        TestShake(Vector3.zero,false);
+        //ShakeCamera(Vector3.zero,false); Testing Shake
        
     }
  
@@ -46,11 +46,11 @@ public class GameManagerScript : MonoBehaviour
 
 
     }
-    private void TestShake(Vector3 dir, bool isExplosion)
+    private void ShakeCamera(Vector3 dir, bool isExplosion)
     {
-     StartCoroutine(ShakeCamera(Vector3.zero, false)); // Test shake effect
+     StartCoroutine(TestShake(dir, isExplosion)); // Test shake effect
     }
-    public IEnumerator ShakeCamera(Vector3 dir, bool isExplosion)
+    public IEnumerator TestShake(Vector3 dir, bool isExplosion)
     {  
         if (isExplosion)
         {
