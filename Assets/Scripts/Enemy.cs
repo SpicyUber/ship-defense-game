@@ -7,6 +7,9 @@ public class Enemy : MonoBehaviour
     public Cannon CannonObject;
     public float DistanceFromCenter;
 
+    public AudioClip BoatMovingSound;
+    public AudioSource AudioSource;
+
     public Transform explosion;
     public ParticleSystem explosion_particle;
     public RockUpAndDown RockUpAndDown;
@@ -31,6 +34,8 @@ public class Enemy : MonoBehaviour
     float spawnTimer;
     float spawnInterval;
     bool _is_first_spawn = true;
+    bool _sound_stopped = false;
+    bool _enemy_hit_by_ray = false;
 
 
 
@@ -44,15 +49,18 @@ public class Enemy : MonoBehaviour
         boxCollider.enabled = false;
         RockUpAndDown.enabled = false;
         _should_enemy_sink = true;
+        AudioSource.enabled = false;
+        AudioSource.volume = 0.3f;
     }
 
     void FixedUpdate()
     {
+        transform.LookAt(player);
         distance = Vector3.Distance(player.position, transform.position);
         movingDirection = (player.position - transform.position);
         movingDirectionNormalized = movingDirection.normalized;
 
-        if(_should_enemy_sink && !_enemy_sank)
+        if (_should_enemy_sink && !_enemy_sank)
         {
             rb.AddForce(new Vector3 (0, -1, 0) * movingIntensity, ForceMode.Force);
 
@@ -61,7 +69,6 @@ public class Enemy : MonoBehaviour
                 rb.constraints = RigidbodyConstraints.FreezePosition; //ne zaboravi da unfreezuješ
                 _should_enemy_sink = false;
                 spawnInterval = Random.Range(1, 6);
-                Debug.Log("respawnovan je" + name);
                 _enemy_sank = true;
             }
         }
@@ -110,10 +117,18 @@ public class Enemy : MonoBehaviour
         {
             rb.AddForce(movingDirectionNormalized * movingIntensity, ForceMode.Force);
         }
+
         else if(distance <= minDistance && (_is_on_distance || !_is_on_distance && !_enemy_sank))
         {
             rb.linearVelocity = Vector3.zero;
             _is_on_distance = true;
+            //stopira se zvuk po pravilu
+
+            if (AudioSource.isPlaying && !_sound_stopped)
+            {
+                AudioSource.Stop();
+                _sound_stopped = true;
+            }
             rb.constraints = RigidbodyConstraints.None;
             //pokrece se tajmer za cannon
             _timer_currently_active = true;
@@ -154,10 +169,13 @@ public class Enemy : MonoBehaviour
                 Debug.Log("udarili smo u" + h.collider.name);
                 if (h.collider.tag == "Enemy" && h.collider.gameObject != this.gameObject)
                 {
+                    _enemy_hit_by_ray = true;
                     MoveToRandomLocationOutsidePlayerView();
                     break;
                 }
+                _enemy_hit_by_ray = false;
             }
+
             EnemyChildren.SetActive(true);
             _is_on_distance = false;
             boxCollider.enabled = true;
@@ -167,6 +185,13 @@ public class Enemy : MonoBehaviour
             rb.constraints = RigidbodyConstraints.FreezeRotationX;
             rb.constraints = RigidbodyConstraints.FreezeRotationZ;
             transform.LookAt(player);
+
+            if (!_enemy_hit_by_ray) {
+                _sound_stopped = false;
+                AudioSource.enabled = true;
+                AudioSource.loop = true;
+                AudioSource.Play();
+            }
         }
 
         else
@@ -180,6 +205,13 @@ public class Enemy : MonoBehaviour
             rb.constraints = RigidbodyConstraints.FreezeRotationX;
             rb.constraints = RigidbodyConstraints.FreezeRotationZ;
             transform.LookAt(player);
+
+            //playuje se zvuk
+            _sound_stopped = false;
+
+            AudioSource.enabled = true;
+            AudioSource.loop = true;
+            AudioSource.Play();
         }
 
     }

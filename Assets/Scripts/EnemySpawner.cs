@@ -53,7 +53,6 @@ public class EnemySpawner : MonoBehaviour
     public void SpawnEnemy()
     {
         Enemies[enemyIndex].MoveToRandomLocationOutsidePlayerView();
-        Debug.Log("spawnovan je brod broj " + enemyIndex);
         _enemy_spawned = true;
         enemyIndex++;
         
