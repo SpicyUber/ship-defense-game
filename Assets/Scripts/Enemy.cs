@@ -55,7 +55,6 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
-        transform.LookAt(player);
         distance = Vector3.Distance(player.position, transform.position);
         movingDirection = (player.position - transform.position);
         movingDirectionNormalized = movingDirection.normalized;
@@ -166,7 +165,6 @@ public class Enemy : MonoBehaviour
         else if (hit != null && hit.Length > 0)
         {
             foreach (RaycastHit h in hit) {
-                Debug.Log("udarili smo u" + h.collider.name);
                 if (h.collider.tag == "Enemy" && h.collider.gameObject != this.gameObject)
                 {
                     _enemy_hit_by_ray = true;
