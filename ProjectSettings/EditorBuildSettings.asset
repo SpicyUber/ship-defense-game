@@ -8,8 +8,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/PlayerLogicTest.unity
+    guid: bee7a5432be54204c81686cb843da1c1
   m_configObjects:
+    com.unity.adaptiveperformance.google.android.provider_settings: {fileID: 11400000, guid: d482cb1c9d6559f49ba62484004d6b72, type: 2}
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 863b04840bc09634284f1b11ee5ba45e, type: 2}
+    com.unity.adaptiveperformance.samsung.android.provider_settings: {fileID: 11400000, guid: 75db0647932e78947a11013cf04ac489, type: 2}
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: bd6e33dce90172c4a907ce85becce21e, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
