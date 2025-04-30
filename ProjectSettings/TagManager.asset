@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - cannonball
+  - Ball
   layers:
   - Default
   - TransparentFX

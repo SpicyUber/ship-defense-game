@@ -9,6 +9,7 @@ using System.Collections;
 public class GameManagerScript : MonoBehaviour
 {
     public CinemachineCamera Camera;
+    public AudioSource MusicSource;
     public CinemachineImpulseSource ImpulseSource;
     public CinemachineBasicMultiChannelPerlin noise;
     private float shakeTimer; // Timer for the shake effect
@@ -16,13 +17,15 @@ public class GameManagerScript : MonoBehaviour
     public int damage = 5; // Just for testing, this should be set to the damage in the game  
     public int hit = 10; // Just for testing, this should be set to the hit in the game  
     public int Score;
+    private HudScript hud;
+    private bool sharkEvent = false;
+    public GameObject Shark;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created  
     void Start()
     {
-        ImpulseSource = Camera.GetComponent<CinemachineImpulseSource>();
-        noise = Camera.GetComponent<CinemachineBasicMultiChannelPerlin>();
-        Score = 100;
+         hud = GameObject.FindAnyObjectByType<HudScript>();
+       // Score = 99;
         //ShakeCamera(Vector3.zero,false); Testing Shake
        
     }
@@ -30,48 +33,88 @@ public class GameManagerScript : MonoBehaviour
 
     // Update is called once per frame  
     void Update()
-    {
-        ScoreDown();// Just to test if the function is working
+    { 
+       // ScoreDown();// Just to test if the function is working
     }
     [ContextMenu("Test Score")]
     public void ScoreUp()
     {
-        Score = Mathf.Min(100, Score + hit); // Adding score
+        if (sharkEvent) return;
 
+        if (Score != MaxScore) hud.ScoreUp();
+        Score = Mathf.Min(MaxScore, Score + hit); // Adding score
+        if(Score==MaxScore && !sharkEvent) { SharkEvent(); }
+    }
+    public void SharkEvent()
+    {if(sharkEvent) { return; }
+        sharkEvent = true;
+        GameObject.FindFirstObjectByType<EnemySpawner>().SharkEvent();
+        Shark.SetActive(true);
+        StartCoroutine(SharkCameraShake());
+        GetComponent<AudioSource>().Stop();
     }
 
+  IEnumerator SharkCameraShake() { yield return new WaitForSeconds(4f); ShakeCamera(new(50f, 0, 50f), true); }
     public void ScoreDown()
-    {
+    { if (sharkEvent) return;
         Score = Mathf.Max(0, Score - damage);// Decrease score 
-
+        hud.ScoreDown();
 
     }
-    private void ShakeCamera(Vector3 dir, bool isExplosion)
+    public void ShakeCamera(Vector3 dir, bool isExplosion)
     {
+        
      StartCoroutine(TestShake(dir, isExplosion)); // Test shake effect
     }
     public IEnumerator TestShake(Vector3 dir, bool isExplosion)
-    {  
+    {
+       /* if (noise == null)
+            Debug.LogError("Noise is NULL!");
+
+        if (ImpulseSource == null)
+            Debug.LogError("ImpulseSource is NULL!");
+
+        if (ImpulseSource != null && ImpulseSource.ImpulseDefinition == null)
+            Debug.LogError("ImpulseDefinition is NULL!");*/
+
         if (isExplosion)
         {
-            float duration = 0.7f;
-            noise.AmplitudeGain = 30f;
-            noise.FrequencyGain =30f;
-            yield return new WaitForSeconds(duration);
-
-            noise.AmplitudeGain = 0;
-            noise.FrequencyGain = 0;
+            Explode1(dir);
+            yield return new WaitForSeconds(0.7f);
+            Explode2(dir);
         }
         else
         {
-           
-            ImpulseSource.ImpulseDefinition.ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Recoil; // Set the impulse shape to Bump                                                                                                   //ImpulseSource.ImpulseDefinition.AmplitudeGain = 10f; // Set the amplitude gain for the impulse signal
-            ImpulseSource.ImpulseDefinition.ImpulseDuration = 1.5f;
-            ImpulseSource.DefaultVelocity = Vector3.up * 15f; // Set the default velocity for the impulse signal
-            ImpulseSource.GenerateImpulse(); // Generate impulse signal
-            dir *= -1f;
-        }
+
+            Recoil(dir);
+
         }
 
+       
+        }
+
+    private void Explode1(Vector3 dir) {
+        
+        noise.AmplitudeGain = 30f;
+        noise.FrequencyGain = 30f;
+       
+
+        
+         
     }
+
+    private void Explode2(Vector3 dir) {
+        noise.AmplitudeGain = 0;
+        noise.FrequencyGain = 0;
+    }
+    private void Recoil(Vector3 dir) {
+        ImpulseSource.ImpulseDefinition.ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Recoil; // Set the impulse shape to Bump                                                                                                   //ImpulseSource.ImpulseDefinition.AmplitudeGain = 10f; // Set the amplitude gain for the impulse signal
+        ImpulseSource.ImpulseDefinition.ImpulseDuration = 1.5f;
+        dir *= -1f;
+        ImpulseSource.DefaultVelocity = dir; // Set the default velocity for the impulse signal
+        ImpulseSource.GenerateImpulseWithForce(15f); // Generate impulse signal
+        
+    }
+
+}
 

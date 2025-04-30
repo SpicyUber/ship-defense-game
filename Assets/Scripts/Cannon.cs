@@ -17,13 +17,13 @@ public class Cannon : MonoBehaviour
     public bool IsPlayerCannon;
     private Vector3 _startingModelScale;
     private Color _startingColor;
-    private float _shootAnimationCooldown = 1f;
-    private float _shootAnimationCooldownTimer = 1f;
+    private float _shootAnimationCooldown = 0.8f;
+    private float _shootAnimationCooldownTimer = 0.8f;
     private bool _shootAnimationIsOn = false;
 
     //Intensity variables
     private float _intensityDampener=100f;
-    private const float _intensityLimiter=0.5f;
+    private const float _intensityLimiter=0.75f;
     //Sound effects
     public AudioClip ShootAfterAnimationSFX, ShootSFX;
     //Enemy shooting variables
@@ -71,7 +71,7 @@ public class Cannon : MonoBehaviour
 
         _shootAnimationIsOn=true;
         if (ShootAfterAnimationSFX != null)
-        GetComponent<AudioSource>().PlayOneShot(ShootAfterAnimationSFX);
+        GetComponent<AudioSource>().PlayOneShot(ShootAfterAnimationSFX, 0.7f);
         _shootAnimationCooldownTimer=0;
         ShootDirection=direction;
         ShootForce=force;
@@ -80,10 +80,12 @@ public class Cannon : MonoBehaviour
     
     public void Shoot(Vector3 direction, Vector3 force) {
         if (!IsPlayerCannon) { return; }
+        ShootForce = force;
         ActualShoot("Enemy");
         if(ShootSFX!=null)
-        GetComponent<AudioSource>().PlayOneShot(ShootSFX);
+        GetComponent<AudioSource>().PlayOneShot(ShootSFX, 0.7f);
         CannonChargeIntensity = 0;
+        
     }
 
     private void ActualShoot(string Tag) {
@@ -98,6 +100,8 @@ public class Cannon : MonoBehaviour
         
     }
 
+    public void AbortShot() {  _shootAnimationIsOn = false; _shootAnimationCooldownTimer = _shootAnimationCooldown; CannonChargeIntensity = 0; BallObject.IsCurrentlyFlying = false; BallObject.transform.position = ShootTransform.position; BallObject.ResetLine();  }
+
     private void OnDisable()
     {
         CannonChargeIntensity=0;
@@ -109,6 +113,7 @@ public class Cannon : MonoBehaviour
     private void ShootAnimation()
     {
         if (!_shootAnimationIsOn) return;
+        if (IsPlayerCannon) return;
 
 
         CannonChargeIntensity = _intensityLimiter * _intensityDampener*(_shootAnimationCooldownTimer / _shootAnimationCooldown);
@@ -120,9 +125,9 @@ public class Cannon : MonoBehaviour
 
     private void ShootExplosion()
     { if (ShootParticleSystem == null) return;
-
-    ShootParticleSystem.Play();
-        
+        ShootParticleSystem.transform.position = ShootTransform.position;
+        ShootParticleSystem.Play();
+       
 
         
 
@@ -131,9 +136,9 @@ public class Cannon : MonoBehaviour
     private void ConvertIntensityToVisuals() { 
        if(CannonModel ==null || _cannonMaterial == null) return;    
 
-        float cannonChargeIntensityAfterDampenerAndLimiter = ((CannonChargeIntensity / _intensityDampener)>_intensityDampener)? _intensityLimiter : (CannonChargeIntensity / _intensityDampener);
-
-        CannonModel.transform.localScale = new( _startingModelScale.x + ( cannonChargeIntensityAfterDampenerAndLimiter*2f),_startingModelScale.y,_startingModelScale.z - (cannonChargeIntensityAfterDampenerAndLimiter / 2f));
+        float cannonChargeIntensityAfterDampenerAndLimiter = ((CannonChargeIntensity / _intensityDampener)> _intensityLimiter) ? _intensityLimiter : (CannonChargeIntensity / _intensityDampener);
+        
+        CannonModel.transform.localScale = new( _startingModelScale.x + ( cannonChargeIntensityAfterDampenerAndLimiter*1.25f),_startingModelScale.y,_startingModelScale.z - (cannonChargeIntensityAfterDampenerAndLimiter));
         _cannonMaterial.SetColor("_Color", new Color(_startingColor.r+(1f- _startingColor.r)* cannonChargeIntensityAfterDampenerAndLimiter, _startingColor.g - (_startingColor.g) * cannonChargeIntensityAfterDampenerAndLimiter, _startingColor.b - (_startingColor.b) * cannonChargeIntensityAfterDampenerAndLimiter, 1f));
 
 

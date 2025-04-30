@@ -8,9 +8,15 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/PlayerLogicTest.unity
     guid: bee7a5432be54204c81686cb843da1c1
+  - enabled: 1
+    path: Assets/Scenes/MainScene.unity
+    guid: 8e453291d66c9a6449ac1108582d970b
+  - enabled: 1
+    path: Assets/Scenes/EndScene.unity
+    guid: dcf049234c7abc8439d96742c7c29024
   m_configObjects:
     com.unity.adaptiveperformance.google.android.provider_settings: {fileID: 11400000, guid: d482cb1c9d6559f49ba62484004d6b72, type: 2}
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 863b04840bc09634284f1b11ee5ba45e, type: 2}

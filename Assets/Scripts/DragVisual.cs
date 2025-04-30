@@ -44,7 +44,7 @@ public class DragVisual : MonoBehaviour
             {
                 lineRenderer.enabled = false;
             }
-            if (audioSource != null && !audioSource.isPlaying)
+            if (audioSource != null && audioSource.isPlaying)
             {
                 audioSource.Pause();
             }

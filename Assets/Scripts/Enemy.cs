@@ -36,12 +36,13 @@ public class Enemy : MonoBehaviour
     bool _is_first_spawn = true;
     bool _sound_stopped = false;
     bool _enemy_hit_by_ray = false;
-
+    public bool ShouldPermaSink = false;
 
 
 
     private void Start()
     {
+        ShouldPermaSink = false;
         interval = Random.Range(5, 10);
         spawnTimer = 0;
         rb.linearVelocity = Vector3.zero;
@@ -55,13 +56,15 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
+
+
         distance = Vector3.Distance(player.position, transform.position);
         movingDirection = (player.position - transform.position);
         movingDirectionNormalized = movingDirection.normalized;
 
         if (_should_enemy_sink && !_enemy_sank)
         {
-            rb.AddForce(new Vector3 (0, -1, 0) * movingIntensity, ForceMode.Force);
+            rb.AddForce(new Vector3 (0, -1, 0) * movingIntensity* 10f, ForceMode.Force);
 
             if (transform.position.y <= -32)
             {
@@ -84,26 +87,30 @@ public class Enemy : MonoBehaviour
             spawnInterval = Random.Range(1, 6);
             MoveToRandomLocationOutsidePlayerView();
         }
-
-        if(_timer_currently_active && timer < interval)
+        if(!_enemy_sank && !_should_enemy_sink && SpinningOutOfControl())
+        {
+            rb.angularVelocity = Vector3.zero;
+            transform.rotation = Quaternion.LookRotation((player.transform.position-transform.position).normalized, transform.up);
+        }
+        if(_timer_currently_active && timer < interval && !(_should_enemy_sink && !_enemy_sank) )
         {
             timer += Time.fixedDeltaTime;
         }
 
-        if(_timer_currently_active && timer >= interval)
+        if(_timer_currently_active && timer >= interval && _is_on_distance)
         {
             
-            firingChances = Random.Range(1, 3);
+            firingChances = Random.Range(1, 50);
             //ako je firing chances 1, top zapuca, a ako je 2, ne zapuca; u oba slucaja se ponovo bira random interval i ponovo zapocinje tajmer
 
-            if (firingChances == 1)
+            if (firingChances != 1)
             {
                 CannonObject.ShootAfterAnimation(movingDirectionNormalized, movingDirection);
                 timer = 0f;
                 interval = Random.Range(5, 10);
             }
 
-            else if (firingChances == 2)
+            else if (firingChances == 1)
             {
                 timer = 0f;
                 interval = Random.Range(5, 10);
@@ -114,7 +121,9 @@ public class Enemy : MonoBehaviour
 
         if (distance > minDistance && !_is_on_distance && !_should_enemy_sink && !_enemy_sank)
         {
+            if (ShouldPermaSink) PermaSink();
             rb.AddForce(movingDirectionNormalized * movingIntensity, ForceMode.Force);
+
         }
 
         else if(distance <= minDistance && (_is_on_distance || !_is_on_distance && !_enemy_sank))
@@ -134,6 +143,18 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private bool SpinningOutOfControl()
+    {
+        Vector3 enemyLookDir = transform.forward;
+        enemyLookDir.y = 0;
+        Vector3 wantedLookDir = player.transform.position - transform.position;
+        wantedLookDir.y = 0;
+        wantedLookDir.Normalize();
+
+        return Vector3.Dot(enemyLookDir, wantedLookDir)<0.9f;
+
+    }
+
     public void Sink(Vector3 ImpactWorldPosition) {
 
         //mozda treba da se obrise ovo sa vector3.zero; testirano na sudaru sa drugim brodom pa se zato brod odbijao onako ludacki
@@ -151,8 +172,9 @@ public class Enemy : MonoBehaviour
 
         movingDirection = (player.position - transform.position);
         movingDirectionNormalized = movingDirection.normalized;
-
-        RaycastHit[] hit = Physics.SphereCastAll(transform.position, 10, movingDirectionNormalized, Vector3.Distance(player.position, transform.position));
+        _is_on_distance = false;
+        CannonObject.AbortShot();
+        RaycastHit[] hit = Physics.SphereCastAll(transform.position, 20, movingDirectionNormalized, Vector3.Distance(player.position, transform.position));
 
 
 
@@ -175,15 +197,15 @@ public class Enemy : MonoBehaviour
             }
 
             EnemyChildren.SetActive(true);
-            _is_on_distance = false;
+            
             boxCollider.enabled = true;
             _enemy_sank = false;
             _should_enemy_sink = false;
             RockUpAndDown.enabled = true;
-            rb.constraints = RigidbodyConstraints.FreezeRotationX;
-            rb.constraints = RigidbodyConstraints.FreezeRotationZ;
+            
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
             transform.LookAt(player);
-
+           
             if (!_enemy_hit_by_ray) {
                 _sound_stopped = false;
                 AudioSource.enabled = true;
@@ -200,8 +222,7 @@ public class Enemy : MonoBehaviour
             _enemy_sank = false;
             _should_enemy_sink = false;
             RockUpAndDown.enabled = true;
-            rb.constraints = RigidbodyConstraints.FreezeRotationX;
-            rb.constraints = RigidbodyConstraints.FreezeRotationZ;
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
             transform.LookAt(player);
 
             //playuje se zvuk
@@ -217,6 +238,7 @@ public class Enemy : MonoBehaviour
     public void MoveToRandomLocationOutsidePlayerView()
     {
         EnemyChildren.SetActive(false);
+        if (ShouldPermaSink) PermaSink();
         int sign1 = Random.Range(1, 3);
         int sign2 = Random.Range(1, 3);
         sign1 = (sign1 == 1) ? 1 : -1;
@@ -236,7 +258,13 @@ public class Enemy : MonoBehaviour
         SpawnSelf();
     }
 
+    public void PermaSink()
+    {
+        ShouldPermaSink = false;
+        CannonObject.AbortShot();
+        Destroy(gameObject);
 
+    }
 
 
     

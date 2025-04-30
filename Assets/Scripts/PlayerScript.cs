@@ -10,29 +10,33 @@ public class PlayerScript : MonoBehaviour
     public HudScript HUD;
     public AudioSource cooldownCompleteAudio;
     public GameManagerScript gameManager;
-    public Cannon CannonObject;
+    public GameObject CannonObject;
+    private Cannon _cannon;
     private Vector2 _touchPosition;
     public DragVisual Visual;
     public bool IsPressed;
     private Vector3 touchStart;
     private Vector3 touchEnd;
-    public float PredefinedLengthFromCamera = 400;
+    public float PredefinedLengthFromCamera = 323f;
     public float cooldownTime = 3;
     public float cooldownTimer = 0;
     public Boolean IsCooldown = false;
+    public ParticleSystem particleSystem;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        gameManager = FindObjectOfType<GameManagerScript>();
+        gameManager = GameObject.FindAnyObjectByType<GameManagerScript>();
         EnhancedTouchSupport.Enable();
         TouchSimulation.Enable();
-
+        _cannon = CannonObject.GetComponent<Cannon>();
         _touchPosition = Vector2.zero;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+       
         Vector3 TouchScreenPosition = Touchscreen.current.primaryTouch.position.value;
         TouchScreenPosition.z = PredefinedLengthFromCamera;
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(TouchScreenPosition);
@@ -55,6 +59,7 @@ public class PlayerScript : MonoBehaviour
                     Visual.FirstPoint = touchStart;
                     Visual.SecondPoint = touchStart;
                     Visual.IsEnabled = true;
+
                 }
             }
         }
@@ -66,7 +71,7 @@ public class PlayerScript : MonoBehaviour
             // rotacija broda
             Vector3 direction = (touchStart - worldPos).normalized;
             direction.y = 0f; // da ne rotira gore/dole
-
+            _cannon.CannonChargeIntensity = (touchStart - worldPos).magnitude;
             if (direction != Vector3.zero)
             {
                 Quaternion lookRotation = Quaternion.LookRotation(direction);
@@ -84,15 +89,16 @@ public class PlayerScript : MonoBehaviour
 
                 IsPressed = false;
                 touchEnd = Camera.main.ScreenToWorldPoint(TouchScreenPosition);
-                CannonObject.CannonChargeIntensity = (touchStart - touchEnd).magnitude;
+                
                 Visual.IsEnabled = false;
                 Vector3 direction = (touchStart - touchEnd).normalized;
-                Vector3 force = touchStart - touchEnd;                
-                CannonObject.Shoot(direction, force);
+                Vector3 force = touchStart - touchEnd;
+                Debug.Log("touchstart,touchend:" + touchStart + "," + touchEnd);
+                _cannon.Shoot(direction, force.magnitude*transform.forward);
                 
                 if (gameManager != null)
                 {
-                    gameManager.ShakeCamera(-direction, false);
+                    gameManager.ShakeCamera(direction, false);
                     //Debug.LogError("GameManagerScript is not found in the scene!");
                 }
 
@@ -117,6 +123,7 @@ public class PlayerScript : MonoBehaviour
                 cooldownTimer = 0f;
                 if (cooldownCompleteAudio != null)
                 {
+                    cooldownCompleteAudio.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
                     cooldownCompleteAudio.Play();
                 }
             }
@@ -124,11 +131,11 @@ public class PlayerScript : MonoBehaviour
     }
     public void MakeExplosion(Vector3 ImpactWorldPosition)
     {
-        ParticleSystem ps = GetComponentInChildren<ParticleSystem>();
-        if (ps != null)
+          
+        if (particleSystem != null)
         {
-            ps.transform.position = ImpactWorldPosition;
-            ps.Play();
+            particleSystem.transform.position = ImpactWorldPosition;
+            particleSystem.Play();
         }
     }
     public float CooldownPercentage()

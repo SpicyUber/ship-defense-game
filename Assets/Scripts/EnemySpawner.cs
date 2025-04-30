@@ -58,4 +58,13 @@ public class EnemySpawner : MonoBehaviour
         
     }
 
+    public void SharkEvent()
+    {
+
+        foreach (Enemy enemy in Enemies) {
+            enemy.ShouldPermaSink=true;
+            enemy.Sink(Vector3.one*3000f);
+        }
+    }
+
 }

@@ -21,18 +21,22 @@ public class Ball : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Mathf.Abs(transform.position.x) > 125f || Mathf.Abs(transform.position.x) > 125f) IsCurrentlyFlying = false;
        _lineRenderer.emitting= IsCurrentlyFlying;
         _ballModel.enabled = IsCurrentlyFlying;
         _ballCollider.enabled = IsCurrentlyFlying;
         if(!IsCurrentlyFlying) { BallRigidbody.linearVelocity = Vector3.zero; }
     }
-
+    private void OnDrawGizmos()
+    {
+       // Gizmos.DrawCube(Vector3.zero,new(300f,1f,300f));
+    }
     private void OnTriggerEnter(Collider other)
     {
         if(Tag != null && Tag.Length!=0 && other.CompareTag(Tag)) {
         IsCurrentlyFlying=false;
         _ballCollider.enabled = IsCurrentlyFlying;
-        GetComponent<AudioSource>().PlayOneShot(GetComponent<AudioSource>().clip);
+        GetComponent<AudioSource>().PlayOneShot(GetComponent<AudioSource>().clip,0.7f);
         if(Tag.Equals("Player")) {
 
                 other.GetComponent<PlayerScript>().MakeExplosion(transform.position);
@@ -40,6 +44,7 @@ public class Ball : MonoBehaviour
             }else if (Tag.Equals("Enemy")) {
 
                 other.GetComponent<Enemy>().Sink(transform.position);
+                other.GetComponent<Enemy>().CannonObject.AbortShot();
                 FindAnyObjectByType<GameManagerScript>().ScoreUp();
             }
 
