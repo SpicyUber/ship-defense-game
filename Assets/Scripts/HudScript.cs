@@ -36,7 +36,6 @@ public class HudScript : MonoBehaviour
     void Update()
     {
         Score.text= "Score: " + managerScript.Score.ToString();
-        Cooldown.value = player.CooldownPercentage();
         
     }
 
