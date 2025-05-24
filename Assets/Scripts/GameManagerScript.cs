@@ -80,7 +80,7 @@ public class GameManagerScript : MonoBehaviour
         if (isExplosion)
         {
             Explode1(dir);
-            yield return new WaitForSeconds(0.7f);
+            yield return new WaitForSeconds(0.4f);
             Explode2(dir);
         }
         else
@@ -95,8 +95,8 @@ public class GameManagerScript : MonoBehaviour
 
     private void Explode1(Vector3 dir) {
         
-        noise.AmplitudeGain = 30f;
-        noise.FrequencyGain = 30f;
+        noise.AmplitudeGain = 5f;
+        noise.FrequencyGain = 5f;
        
 
         
@@ -112,7 +112,7 @@ public class GameManagerScript : MonoBehaviour
         ImpulseSource.ImpulseDefinition.ImpulseDuration = 1.5f;
         dir *= -1f;
         ImpulseSource.DefaultVelocity = dir; // Set the default velocity for the impulse signal
-        ImpulseSource.GenerateImpulseWithForce(15f); // Generate impulse signal
+        ImpulseSource.GenerateImpulseWithForce(5f); // Generate impulse signal
         
     }
 

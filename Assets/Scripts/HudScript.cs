@@ -36,7 +36,7 @@ public class HudScript : MonoBehaviour
     void Update()
     {
         Score.text= "Score: " + managerScript.Score.ToString();
-        
+        Cooldown.value = player.CooldownPercentage();
     }
 
    public void ScoreUp() { if (_coroutine != null) { StopCoroutine(_coroutine); } _coroutine = StartCoroutine(ScoreAnimation(true)); }
@@ -53,12 +53,12 @@ public class HudScript : MonoBehaviour
         if (scoreWentUp) {
             Score.color = ScoreUpColor;
             while (t<animationSpeed/2.5f) {
-                Score.rectTransform.localScale = textStartScale*(1f+(t/(animationSpeed/2.5f)*0.35f));
+                Score.rectTransform.localScale = textStartScale*(1f+(t/(animationSpeed/2.5f)*0.1f));
                 yield return null;
                 t += Time.deltaTime;
             }
             t = 0f;
-            Vector3 tempScale = textStartScale * 1.5f;
+            Vector3 tempScale = textStartScale * 1.1f;
             while (t + animationSpeed / 2.5f < animationSpeed)
             {
                 Score.rectTransform.localScale= Vector3.Lerp(tempScale,textStartScale, (t + animationSpeed / 2.5f) / animationSpeed);

@@ -3,6 +3,7 @@ using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SharkScript : MonoBehaviour
 {
@@ -28,6 +29,8 @@ public class SharkScript : MonoBehaviour
     private Color _startingColor;
     private Collider _collider;
     private bool _isDead;
+    public GameObject SliderPanel;
+    public Slider SharkHP;
    
     public CinemachineCamera Main, Side,Last;
     
@@ -56,6 +59,7 @@ public class SharkScript : MonoBehaviour
         _isJumping = true;
         _collider.enabled = true;
         _t = 0;
+        SliderPanel.SetActive(true);
         _audioSource.PlayOneShot(Jump);
     }
     public void PlayerDeathAction()
@@ -63,7 +67,7 @@ public class SharkScript : MonoBehaviour
         _isMunchingPlayer=true;
         GameObject.FindAnyObjectByType<PlayerScript>().enabled = false;
         DeathPanel.SetActive(true);
-        StartCoroutine(DelayThenAction(3f, RestartScene));
+        StartCoroutine(DelayThenAction(5f, RestartScene));
     }
     public void RestartScene()
     {
@@ -73,6 +77,7 @@ public class SharkScript : MonoBehaviour
 
     public void SharkDeath()
     {
+        SliderPanel.SetActive(false);
         _audioSource.Stop();
         _audioSource.PlayOneShot(Death);
         GoToSideCam();
@@ -146,6 +151,7 @@ public class SharkScript : MonoBehaviour
         if(_health<=0 || _isMunchingPlayer) return;
         _audioSource.PlayOneShot(Hurt);
         _health--;
+        SharkHP.value = _health/6f;
         TurnRed();
         GameObject.FindAnyObjectByType<GameManagerScript>().ShakeCamera(new(1,0,1),true);
         

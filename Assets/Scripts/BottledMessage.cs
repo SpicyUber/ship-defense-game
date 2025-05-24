@@ -6,7 +6,7 @@ public class BottledMessage : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        GetComponent<Rigidbody>().linearVelocity = -transform.position.normalized*5f;
+        GetComponent<Rigidbody>().linearVelocity = -transform.position.normalized*6f;
         GetComponent<AudioSource>().PlayDelayed(1f);
     }
 

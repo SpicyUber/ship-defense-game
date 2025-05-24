@@ -40,7 +40,7 @@ public class PlayerScript : MonoBehaviour
         Vector3 TouchScreenPosition = Touchscreen.current.primaryTouch.position.value;
         TouchScreenPosition.z = PredefinedLengthFromCamera;
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(TouchScreenPosition);
-     
+        
         HandleCooldown();        
         
         //prvi dodir
@@ -48,15 +48,18 @@ public class PlayerScript : MonoBehaviour
         {
             if (!IsCooldown)
             {
+                 
                 Vector2 playerXZ = new Vector2(transform.position.x, transform.position.z);
                 Vector2 touchXZ = new Vector2(worldPos.x, worldPos.z);
                 float distance = Vector2.Distance(playerXZ, touchXZ);
 
-                if (distance < 20f) // prag koji definiše "blizu"
+                if (distance < 40f) // prag koji definiše "blizu"
                 {
                     IsPressed = true;
                     touchStart = worldPos;
-                    Visual.FirstPoint = touchStart;
+                    Vector3 temp = touchStart;
+                    temp.x = 0; temp.z = 0;
+                    Visual.FirstPoint =temp ;
                     Visual.SecondPoint = touchStart;
                     Visual.IsEnabled = true;
 
