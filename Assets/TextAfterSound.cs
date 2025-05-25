@@ -15,7 +15,7 @@ public class TextAfterSound : MonoBehaviour
         //NE MENJAMO MATERIJAL U EDITORU, posto to utice na svaki tekst u igrici koji koristi taj font, a to ne zelimo.
         endText.color = new(endText.color.r,endText.color.g,endText.color.b,0);
         //odmah namestamo tekst
-        endText.text = "Bitka za okean je završena\nali rat na kopnu tek počinje.\nVaša posada mora otići do Tašmajdana, \ngde je potrebno izgovoriti drevnu vradžbinu \nsakrivenu u sledećim rečima...";
+        endText.text = "Bitka za okean je završena\nali rat na kopnu tek počinje.\nVaša posada mora otići do Tašmajdana\ni tamo pronaći autorku prolećnih pesama i krvavih bajki.\nKod nje je potrebno izgovoriti drevnu vradžbinu \nsakrivenu u sledećim rečima...";
 
 
 
