@@ -15,7 +15,10 @@ public class TextAfterSound : MonoBehaviour
         //NE MENJAMO MATERIJAL U EDITORU, posto to utice na svaki tekst u igrici koji koristi taj font, a to ne zelimo.
         endText.color = new(endText.color.r,endText.color.g,endText.color.b,0);
         //odmah namestamo tekst
-        endText.text = "Bitka za okean je završena\nali rat na kopnu tek počinje.\nVaša posada mora otići do Tašmajdana\ni tamo pronaći autorku prolećnih pesama i krvavih bajki.\nKod nje je potrebno izgovoriti drevnu vradžbinu \nsakrivenu u sledećim rečima...";
+        endText.text = "VICTORY!\n\n\nThis game was made in less than two weeks for the purposes of Fonis Treasure Hunt 2025 \n\nCREDITS:\n[LEAD PROGRAMMER]\nAleksandar Ilanković\n\n[GAME DESIGNER]\nAleksandar Ilanković\n\n" +
+            "[PLAYER LOGIC]\nLuka Milikić\n" +
+            "\n[ENEMY LOGIC]\nTeodor Vicelarević\n\n[SHIP MOVEMENT]\nTeodor Vicelarević\n" + "\n[UI LOGIC]\nMilan Davidović\n\n[GAME MANAGER LOGIC]\nMilan Davidović\n\n[END SCENE]\nMilan Davidović\n\n[CANNON LOGIC]\nAleksandar Ilanković\n\n[SHARK FIGHT]\nAleksandar Ilanković \n\n[UI ARTIST]\nLuka Milikić\n\n[MUSIC]\nAleksandar Ilanković\n\n\nTHANKS FOR PLAYING!";
+
 
 
 
@@ -25,7 +28,7 @@ public class TextAfterSound : MonoBehaviour
 
     private void Update()
     {
-        Clue.color = new Color(Clue.color.r, Clue.color.g, Clue.color.b, endText.color.a);
+      //  Clue.color = new Color(Clue.color.r, Clue.color.g, Clue.color.b, endText.color.a);
     }
     IEnumerator PlayAudioAndShowText()
     {

@@ -2281,7 +2281,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: AJKULA
+  m_text: SHARK
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2805,7 +2805,15 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Va\u0161u posadu je pojela ajkula.\n\n\n\n\n\n\nPoku\u0161ajte ponovo."
+  m_text: 'Your crew was eaten by a shark.
+
+
+
+
+
+
+
+    Try again.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3235,7 +3243,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8f01b5338eb7eb74196f3698a69beb05, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 381feb279f4adea428d5308f9309fbd7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3272,7 +3280,7 @@ MonoBehaviour:
   - {fileID: 1212911792}
   - {fileID: 5270233040911903862}
   - {fileID: 8994844772811672831}
-  TapToStart: {fileID: 21300000, guid: ddc84763412f27b4faf34b2981a7f617, type: 3}
+  TapToStart: {fileID: 21300000, guid: 8794f4bff56ffa44a91cc755bd098db5, type: 3}
   MainCamera: {fileID: 4775728192102050486}
   IntroCamera: {fileID: 966448297}
   Spawner: {fileID: 150354294}
@@ -8804,8 +8812,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9087257901907601531}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.000000009812732, y: 0.92387956, z: 0.000000023690031, w: -0.3826834}
-  m_LocalPosition: {x: 100, y: 33, z: 100}
+  m_LocalRotation: {x: -0.08198089, y: 0.90918237, z: -0.34727663, w: -0.21462882}
+  m_LocalPosition: {x: 50, y: 100.75, z: 235.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9957,8 +9965,8 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.1
-  far clip plane: 5000
-  field of view: 66.15279
+  far clip plane: 500
+  field of view: 60.000004
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
